@@ -2,7 +2,9 @@
 
 A browser-based multiplayer Snake game — vanilla JavaScript, HTML5 Canvas, **zero runtime dependencies**.
 
-**[▶ Play it live](https://kevinsssss-boop.github.io/snake-game/)**
+**[▶ Play it live](https://kevinsssss-boop.github.io/demos/snake/)**
+
+<sub>Also reachable from the [portfolio site](https://kevinsssss-boop.github.io/) — this repo is the source, that page is the demo.</sub>
 
 ---
 
