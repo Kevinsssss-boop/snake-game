@@ -1,0 +1,15 @@
+# Claude Code 本地权限配置 —— 每台机器不同，不应入库
+.claude/
+
+# 依赖与构建缓存
+node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
