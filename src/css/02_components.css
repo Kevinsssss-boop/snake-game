@@ -36,6 +36,34 @@
 #hud-fuel .bar-bg{width:140px;height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden}
 #hud-fuel .bar-fill{height:100%;background:linear-gradient(90deg,#ff9100,#ffc400);border-radius:3px;transition:width .2s}
 #hud-fuel .bar-label{font-size:10px;color:var(--text-dim)}
+
+/* ---- 双人对战：两名玩家各自的计分板 ----
+   贴在左上 / 右上角，互不遮挡；中间只留时间。 */
+.hud-player{position:fixed;top:12px;left:12px;z-index:40;pointer-events:none;
+  min-width:136px;padding:8px 12px;border-radius:10px;
+  background:rgba(10,10,30,0.8);border:1px solid var(--border);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.hud-player-right{left:auto;right:12px}
+.hp-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
+.hp-name{font-size:10px;font-weight:800;letter-spacing:1px;color:var(--text-dim)}
+.hp-pu{font-size:13px;line-height:1}
+.hp-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.hp-k{font-size:11px;color:var(--text-dim)}
+.hp-v{font-size:18px;font-weight:800;line-height:1.35;font-variant-numeric:tabular-nums}
+.hp-rank{color:#ffd740}
+.hp-bar{height:5px;margin-top:6px;border-radius:3px;overflow:hidden;background:rgba(255,255,255,0.1)}
+.hp-fill{height:100%;width:100%;border-radius:3px;transition:width .2s;background:linear-gradient(90deg,#ff9100,#ffc400)}
+
+/* 双人模式下，中间那套 HUD 只保留时间 ——
+   得分/排名/combo/燃料都已经挪到各自的板子上了。 */
+body.mode-local #hud-box-score,
+body.mode-local #hud-box-rank,
+body.mode-local #hud-box-combo,
+body.mode-local #hud-fuel,
+body.mode-local #hud-powerup{display:none}
+
+/* 死亡后把该玩家的板子压暗，一眼看出谁还在场上 */
+.hud-player.hp-dead{opacity:.42}
 #hud-powerup{position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:40;pointer-events:none;font-size:28px;animation:pulse-icon .6s ease-in-out infinite}
 /* Kill feed */
 #kill-feed{position:fixed;top:90px;right:12px;z-index:45;pointer-events:none;display:flex;flex-direction:column;gap:4px}

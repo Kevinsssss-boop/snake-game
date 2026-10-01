@@ -75,7 +75,7 @@ function updateAI(snake, dt, allSnakes, foods) {
         threats.sort((a, b) => a.dist - b.dist);
         const t = threats[0];
         snake.aiTarget = { x: head.x + t.dx * 2.5, y: head.y + t.dy * 2.5 };
-      } else if (prey.length > 0 && prey[0].dist < myLen * 8 && prey[0].segs.length < myLen * 0.5) {
+      } else if (prey.length > 0 && prey[0].dist < myLen * 8 && prey[0].snake.segs.length < myLen * 0.5) {
         prey.sort((a, b) => a.dist - b.dist);
         snake.aiTarget = prey[0].snake.head;
       } else if (nearestPU && nearestPUDist < 250 * 250) {

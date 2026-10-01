@@ -69,6 +69,7 @@ function startGame() {
     document.getElementById('hud-fuel').classList.remove('hidden');
     document.getElementById('hud-powerup').classList.add('hidden');
     document.getElementById('btn-pause').classList.remove('hidden');
+    syncHudMode();
     document.getElementById('kill-feed').innerHTML = '';
     initGame();
   };
@@ -168,9 +169,26 @@ function initGame() {
 }
 
 
+/**
+ * 按当前模式切换 HUD 布局。
+ *
+ * 双人对战下两名玩家各有一块计分板（左上 / 右上），中间那套只留时间；
+ * 单人模式下计分板隐藏，中间那套照常显示全部四项。
+ * 除了切显隐，还要给 <body> 挂 mode-local —— CSS 靠它决定中间那套
+ * 显示哪几个格子。用样式表控制而不是逐个元素写 style，是为了让
+ * 「哪些格子属于谁」这件事集中在一处，不至于散落在 JS 和 HTML 两边。
+ */
+function syncHudMode() {
+  const isLocal = mode === 'local';
+  document.body.classList.toggle('mode-local', isLocal);
+  document.getElementById('hud-p1').classList.toggle('hidden', !isLocal);
+  document.getElementById('hud-p2').classList.toggle('hidden', !isLocal);
+}
+
 function backToHome() {
   state = 'home';
-  ['hud', 'hud-fuel', 'hud-powerup', 'btn-pause'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  ['hud', 'hud-fuel', 'hud-powerup', 'btn-pause', 'hud-p1', 'hud-p2'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  document.body.classList.remove('mode-local');
   document.getElementById('kill-feed').innerHTML = '';
   showPanel('home');
   hidePanel('game-over-panel');

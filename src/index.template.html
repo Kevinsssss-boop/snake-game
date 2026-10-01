@@ -278,6 +278,9 @@
   <div class="winner" id="go-winner"></div>
   <div class="result" id="go-result"></div>
   <div class="stats" id="go-stats"></div>
+  <!-- 双人对战：两名玩家的成绩对照。单人模式下隐藏，
+       那里仍用上面 #go-result / #go-stats 那两行「你的排名/你的得分」。 -->
+  <div class="versus hidden" id="go-versus"></div>
   <div class="leaderboard" id="go-lb"></div>
   <div class="btn-row">
     <button class="btn primary" onclick="startGame()">🔄 再来一局</button>
@@ -287,13 +290,30 @@
 
 <!-- HUD -->
 <div id="hud" class="hidden">
-  <div class="hud-box"><div class="hud-label">得分</div><div class="hud-val" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text" id="hud-score">0</div></div>
-  <div class="hud-box"><div class="hud-label">⏱ 时间</div><div class="hud-val" id="hud-time">3:00</div></div>
-  <div class="hud-box"><div class="hud-label">🥇 排名</div><div class="hud-val" style="color:#ffd740" id="hud-rank">1/9</div></div>
-  <div class="hud-box"><div class="hud-label">combo</div><div class="hud-val" style="color:#ff9100" id="hud-combo">-</div></div>
+  <div class="hud-box" id="hud-box-score"><div class="hud-label">得分</div><div class="hud-val" style="background:linear-gradient(135deg,#ff6b6b,#ffd93d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text" id="hud-score">0</div></div>
+  <div class="hud-box" id="hud-box-time"><div class="hud-label">⏱ 时间</div><div class="hud-val" id="hud-time">3:00</div></div>
+  <div class="hud-box" id="hud-box-rank"><div class="hud-label">🥇 排名</div><div class="hud-val" style="color:#ffd740" id="hud-rank">1/9</div></div>
+  <div class="hud-box" id="hud-box-combo"><div class="hud-label">combo</div><div class="hud-val" style="color:#ff9100" id="hud-combo">-</div></div>
 </div>
 <div id="hud-fuel" class="hidden"><span class="bar-label">⚡</span><div class="bar-bg"><div class="bar-fill" id="fuel-fill" style="width:100%"></div></div></div>
 <div id="hud-powerup" class="hidden"></div>
+
+<!-- 双人对战：两名玩家各有一块计分板。
+     单人模式下这两块是隐藏的，中间那套 #hud 照常显示全部四项。
+     双人模式下中间只留时间，得分/排名/燃料分给各自的板子 ——
+     否则两组数字挤在一起，谁也分不清哪个是自己的。 -->
+<div id="hud-p1" class="hud-player hidden">
+  <div class="hp-head"><span class="hp-name">P1</span><span class="hp-pu" id="p1-powerup"></span></div>
+  <div class="hp-row"><span class="hp-k">得分</span><span class="hp-v" id="p1-score">0</span></div>
+  <div class="hp-row"><span class="hp-k">排名</span><span class="hp-v hp-rank" id="p1-rank">1/12</span></div>
+  <div class="hp-bar"><div class="hp-fill" id="p1-fuel" style="width:100%"></div></div>
+</div>
+<div id="hud-p2" class="hud-player hud-player-right hidden">
+  <div class="hp-head"><span class="hp-name">P2</span><span class="hp-pu" id="p2-powerup"></span></div>
+  <div class="hp-row"><span class="hp-k">得分</span><span class="hp-v" id="p2-score">0</span></div>
+  <div class="hp-row"><span class="hp-k">排名</span><span class="hp-v hp-rank" id="p2-rank">1/12</span></div>
+  <div class="hp-bar"><div class="hp-fill" id="p2-fuel" style="width:100%"></div></div>
+</div>
 
 <button id="btn-pause" class="hidden" onclick="togglePause()">⏸ 暂停<span class="key">P</span></button>
 <div id="kill-feed"></div>

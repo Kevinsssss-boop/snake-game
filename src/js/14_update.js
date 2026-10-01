@@ -273,12 +273,88 @@ function update(dt) {
 let hudCache = { score: -1, time: '', rank: '', combo: '', fuel: -1, fuelColor: '', powerup: '' };
 let hudThrottle = 0;
 
+/**
+ * 刷新一名玩家的计分板（双人对战用）。
+ *
+ * 两块板子结构完全相同，只有 id 前缀不同，所以合并成一个函数。
+ * 分开写两次的话，以后改一处忘一处几乎是必然的。
+ *
+ * 关键点：P2 此前**完全没有**任何状态显示 —— 看不到得分、看不到排名，
+ * 尤其看不到加速燃料还剩多少。而燃料是有限资源，没有提示的话
+ * 玩家只会觉得「加速时有时无」，然后不停按 Tab。
+ */
+function updatePlayerPanel(prefix, snake) {
+  const el = document.getElementById('hud-' + prefix);
+  if (!el || !snake) return;
+
+  // 死亡后整块压暗，一眼看出谁还在场上
+  el.classList.toggle('hp-dead', !snake.alive);
+
+  const ck = 'p:' + prefix;
+
+  if (hudCache[ck + ':score'] !== snake.score) {
+    document.getElementById(prefix + '-score').textContent = snake.score;
+    hudCache[ck + ':score'] = snake.score;
+  }
+
+  // 排名只在存活时计算。死掉的蛇不参与名次，显示「—」比给一个假名次诚实。
+  let rankStr = '—';
+  if (snake.alive) {
+    const alive = [];
+    for (let i = 0; i < snakes.length; i++) { if (snakes[i].alive) alive.push(snakes[i]); }
+    alive.sort((a, b) => b.score - a.score);
+    let rank = alive.length;
+    for (let i = 0; i < alive.length; i++) { if (alive[i] === snake) { rank = i + 1; break; } }
+    rankStr = rank + '/' + snakes.length;
+  }
+  if (hudCache[ck + ':rank'] !== rankStr) {
+    document.getElementById(prefix + '-rank').textContent = rankStr;
+    hudCache[ck + ':rank'] = rankStr;
+  }
+
+  const fuelPct = Math.round((snake.boostFuel / CFG.BOOST_FUEL) * 100);
+  if (hudCache[ck + ':fuel'] !== fuelPct) {
+    const fill = document.getElementById(prefix + '-fuel');
+    fill.style.width = fuelPct + '%';
+    fill.style.background = fuelPct < 25
+      ? 'linear-gradient(90deg,#ff5252,#ff9100)'
+      : 'linear-gradient(90deg,#ff9100,#ffc400)';
+    hudCache[ck + ':fuel'] = fuelPct;
+  }
+
+  const PRIORITY = ['shield', 'ghost', 'speed', 'magnet'];
+  const active = Object.keys(snake.powerups).sort((a, b) =>
+    (PRIORITY.indexOf(a) !== -1 ? PRIORITY.indexOf(a) : 99) -
+    (PRIORITY.indexOf(b) !== -1 ? PRIORITY.indexOf(b) : 99)
+  )[0];
+  let puStr = '';
+  if (active) {
+    const t = POWERUP_TYPES.find(p => p.id === active);
+    if (t) puStr = t.icon + ' ' + Math.ceil(snake.powerups[active]) + 's';
+  }
+  if (hudCache[ck + ':pu'] !== puStr) {
+    document.getElementById(prefix + '-powerup').textContent = puStr;
+    hudCache[ck + ':pu'] = puStr;
+  }
+}
+
 function updateHUD(dt) {
   hudThrottle += dt;
   if (hudThrottle < 0.09) return; // ~10 Hz
   hudThrottle = 0;
 
-  const player = getPlayer() || getPlayer2();
+  // 双人对战：两名玩家各刷各的计分板（左上 / 右上）。
+  // 中央那套只留时间，其余格子由 CSS 的 body.mode-local 隐藏。
+  if (mode === 'local') {
+    updatePlayerPanel('p1', getPlayer());
+    updatePlayerPanel('p2', getPlayer2());
+  }
+
+  // 这里不再回退到 getPlayer2()。
+  // 原来写的是 `getPlayer() || getPlayer2()`：P1 一死，中央 HUD 就悄悄
+  // 换成 P2 的得分和排名，同一组数字换了主人却没有任何提示 ——
+  // 双人模式下这是最容易把人绕晕的一处。
+  const player = getPlayer();
 
   const score = player ? player.score : 0;
   if (hudCache.score !== score) {
